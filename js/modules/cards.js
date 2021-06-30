@@ -71,4 +71,4 @@ function cards() {
         'menu__item'
     ).render();
 }
-module.exports = cards;
+export default cards;

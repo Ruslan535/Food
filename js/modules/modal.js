@@ -1,45 +1,49 @@
-function modal() {
-    
-    const modalTrigger = document.querySelectorAll('[data-modal]'),
-    modal = document.querySelector('.modal');
+function openModal(modalSelector, timerModal) {
+    const modal = document.querySelector(modalSelector);
+    modal.style.display = 'block';
+    document.body.style.overflow = 'hidden';
 
-    function openModal() {
-        modal.style.display = 'block';
-        document.body.style.overflow = 'hidden';
+    if(timerModal) {
         clearInterval(timerModal);
     }
+}
+function closeModal(modalSelector) {
+    const modal = document.querySelector(modalSelector);
+    modal.style.display = 'none';
+    document.body.style.overflow = '';
+}
 
+function modal(triggerSelector, modalSelector, timerModal) {
+    
+    const modalTrigger = document.querySelectorAll(triggerSelector),
+    modal = document.querySelector(modalSelector);
+    
     modalTrigger.forEach(item => {
-        item.addEventListener('click', openModal);
+        item.addEventListener('click', () => openModal(modalSelector, timerModal));
     });
-
-    function closeModal() {
-        modal.style.display = 'none';
-        document.body.style.overflow = '';
-    }
 
     modal.addEventListener('click', (event) => {
         if (event.target === modal || event.target.getAttribute('data-close') == '') {
-            closeModal();
+            closeModal(modalSelector);
         }
     });
 
     document.addEventListener('keydown', (event) => {
         if (event.code === 'Escape') {
-            closeModal();
+            closeModal(modalSelector);
         }
     });
-
-    const timerModal = setTimeout(openModal, 50000);
 
     function showModalBySroll() {
             //Прокрученная часть стр.        //Видимая часть стр.                 //Размер целой стр.   
         if (window.pageYOffset + document.documentElement.clientHeight >= document.documentElement.scrollHeight) {
-            openModal();
+            openModal(modalSelector, timerModal);
             window.removeEventListener('scroll', showModalBySroll);
         }
     }
 
     window.addEventListener('scroll', showModalBySroll);
 }
-module.exports = modal;
+export default modal;
+export {openModal};
+export {closeModal};
