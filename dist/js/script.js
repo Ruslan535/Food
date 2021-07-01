@@ -302,7 +302,7 @@ slider.style.position = 'relative';
 
 slides.forEach(slide => {
     slide.style.width = width;
-})
+});
 
 if(slides.length < 10) {
     total.textContent = `0${slides.length}`;
@@ -346,20 +346,20 @@ for(let i = 0; i < slides.length; i++) {
     border-bottom: 10px solid transparent;
     opacity: .5;
     transition: opacity .6s ease;
-    `
+    `;
     if(i == 0) {
         dot.style.opacity = 1;
     }
 
     dots.append(dot);
     arrDots.push(dot);
-};
+}
 
 next.addEventListener('click', () => {
-    if(offset == +width.slice(0, width.length -2) * (slides.length - 1)) {
+    if(offset == deleteNoDigits(width) * (slides.length - 1)) {
         offset = 0;
     } else {
-        offset += +width.slice(0, width.length -2);
+        offset += deleteNoDigits(width);
     }
     sliderInner.style.transform = `translateX(-${offset}px)`;
 
@@ -369,15 +369,15 @@ next.addEventListener('click', () => {
         slideIndex++;
     }
 
-    currentSliderItem()
-    styleDots()
+    currentSliderItem();
+    styleDots();
 });
 
 prev.addEventListener('click', () => {
     if(offset == 0) {
-        offset = +width.slice(0, width.length -2) * (slides.length - 1);
+        offset = deleteNoDigits(width) * (slides.length - 1);
     } else {
-        offset -= +width.slice(0, width.length -2);
+        offset -= deleteNoDigits(width);
     }
     sliderInner.style.transform = `translateX(-${offset}px)`;
 
@@ -387,8 +387,8 @@ prev.addEventListener('click', () => {
         slideIndex--;
     }
 
-    currentSliderItem()
-    styleDots()
+    currentSliderItem();
+    styleDots();
 });
 
 arrDots.forEach(dot => {
@@ -396,7 +396,7 @@ arrDots.forEach(dot => {
         const slideTo = e.target.getAttribute('data-slide-to');
 
         slideIndex = slideTo;
-        offset = +width.slice(0, width.length -2) * (slideTo - 1);
+        offset = deleteNoDigits(width) * (slideTo - 1);
 
         sliderInner.style.transform = `translateX(-${offset}px)`;
 
@@ -415,3 +415,6 @@ function currentSliderItem() {
         current.textContent = slideIndex;
     }
 }
+function deleteNoDigits(str) {
+    return +str.replace(/\D/g, '');
+} 
