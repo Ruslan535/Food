@@ -10,10 +10,32 @@ function forms(formSelector, timerModal) {
     };
 
     forms.forEach(item => {
-        postForm(item);
+        bindPostForm(item);
     });
 
-    function postForm(form) {
+    const postData = async (url, data) => {
+        const res = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-type': 'application/json'
+            },
+            body: data
+        });
+
+        return await res.json();
+    };
+
+    async function getResource(url) {
+        let res = await fetch(url);
+    
+        if (!res.ok) {
+            throw new Error(`Could not fetch ${url}, status: ${res.status}`);
+        }
+    
+        return await res.json();
+    }
+
+    function bindPostForm(form) {
         form.addEventListener('submit', (e) => {
             e.preventDefault();
 
@@ -23,25 +45,22 @@ function forms(formSelector, timerModal) {
                 display: block;
                 margin: 0 auto;
             `;
-            form.append(statusMessage);
-
-            const request = new XMLHttpRequest();
-
-            request.open('POST', 'server.php');
+            form.insertAdjacentElement('afterend', statusMessage);
 
             const formData = new FormData(form);
-            request.send(formData);
+            
+            const json = JSON.stringify(Object.fromEntries(formData.entries()));
 
-            request.addEventListener('load', () => {
-                if(request.status === 200) {
-                    console.log(request.response);
-                    showThanksModal(message.succes);
-                    form.reset();
-                    statusMessage.remove();
-                }else {
-                    showThanksModal(message.failure);
-                }
-            });
+            postData('http://localhost:3000/requests', json)
+            .then(data => {
+                console.log(data);
+                showThanksModal(message.succes);
+                statusMessage.remove();
+            }).catch(() => {
+                showThanksModal(message.failure);
+            }).finally(() => {
+                form.reset();
+            })
         });
     }
 
@@ -71,6 +90,5 @@ function forms(formSelector, timerModal) {
 
     fetch('http://localhost:3000/menu')
         .then(data => data.json())
-        .then(res => console.log(res))
 }
 export default forms;
